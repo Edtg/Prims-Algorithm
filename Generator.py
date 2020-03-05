@@ -6,19 +6,24 @@ import math
 
 class Generator(object):
     def __init__(self, startx, starty, size = 11):
+        StartTime = time.time()
+
         self.Grid = [[0 for i in range(size)] for j in range(size)]
         self.Grid[starty][startx] = 1
         self.Frontier = []
         for row in self.Grid:
             print(row)
 
+        Pathways = 0
         self.CalculateFrontier(startx, starty)
         while (len(self.Frontier) > 0):
             self.Expand()
             self.CleanFrontier()
             #input()
             os.system("cls")
-            self.PrintGrid()
+            #print("Generating Maze")
+            Pathways += 1
+            #self.PrintGrid()
             #for row in self.Grid:
             #    print(row)
             print("Frontier:")
@@ -26,12 +31,23 @@ class Generator(object):
             #time.sleep(0.2)
         
         print("Adding loops")
-        self.AddLoops(math.floor(size-1/2))
-        time.sleep(0.5)
+        self.AddLoops(round(pow(round(size/5), 2)))
+        #time.sleep(0.5)
+
+        EndTime = time.time()
 
         os.system("cls")
         self.PrintGrid()
+        print("Generated Maze in " + str(EndTime - StartTime) + " seconds")
+        print("Maze width/height: " + str(size))
+        print("Number of pathways created: " + str(Pathways))
+        print("Number of loops inserted: " + str(round(pow(round(size/5), 2))))
 
+    def SetGridValue(self, x, y, Value):
+        self.Grid[y][x] = Value
+
+    def GetGridValue(self, x, y):
+        return self.Grid[y][x]
 
     def CalculateFrontier(self, x, y):
         print("Calculating frontier around:")
@@ -84,6 +100,23 @@ class Generator(object):
                 if (self.Grid[y+2][x] == 1):
                     Neighbors.append([x, y+2])
             print(Neighbors)
+        return Neighbors
+
+    def GetDirectNeighbors(self, x, y):
+        Neighbors = []
+        if (x >= 0 and x <= len(self.Grid)-1 and y >= 0 and y <= len(self.Grid)-1):
+            if (x-1 >= 0):
+                if (self.Grid[y][x-1] == 1):
+                    Neighbors.append([x-1, y])
+            if (x+1 <= len(self.Grid)-1):
+                if (self.Grid[y][x+1] == 1):
+                    Neighbors.append([x+1, y])
+            if (y-1 >= 0):
+                if (self.Grid[y-1][x] == 1):
+                    Neighbors.append([x, y-1])
+            if (y+1 <= len(self.Grid)-1):
+                if (self.Grid[y+1][x] == 1):
+                    Neighbors.append([x, y+1])
         return Neighbors
 
     def Expand(self):
@@ -160,21 +193,26 @@ class Generator(object):
                 if (cell == 0):
                     print(" ", end=" ")
                     #print("\u25A1", end=" ")
-                else:
-                    print("\u25A0", end=" ")
+                elif (cell == 1):
+                    print("\033[1;32;40m\u25A0\033[1;30;40m", end=" ")
+                    #print("\u25A0", end=" ")
+                elif (cell == 2):
+                    print("\033[1;34;40m\u25A0\033[1;30;40m", end=" ")
+                elif (cell == 3):
+                    print("\033[1;31;40m\u25A0\033[1;30;40m", end=" ")
             print("\n", end="")
 
 
         
 
+if (__name__ == "__main__"):
+    GridSize = 15
 
-GridSize = 15
+    x = math.floor(random.randint(0,GridSize)/2)*2
+    y = math.floor(random.randint(0,GridSize)/2)*2
+    print("Starting at:", x, y)
+    #input()
 
-x = math.floor(random.randint(0,GridSize)/2)*2
-y = math.floor(random.randint(0,GridSize)/2)*2
-print("Starting at:", x, y)
-input()
-
-Generator(x, y, GridSize)
+    Generator(x, y, GridSize)
 
 
