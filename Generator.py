@@ -199,13 +199,21 @@ class Generator(object):
             img = img.resize(((self.sizex+2) * cellsize, (self.sizey+2) * cellsize), Image.BOX)
             img.show()
             img.save("Prim's Algorithm/mazes/" + imgname + ".jpg")
+            img.close()
 
 
         
 
 
-GridSizex = 25
-GridSizey = 15
+GridSizex = 0
+GridSizey = 0
+
+while GridSizex < 3 or GridSizey < 3:
+    try:
+        GridSizex = (round(int(input("Enter the width of the maze: "))/2)*2)+1
+        GridSizey = (round(int(input("Enter the height of the maze: "))/2)*2)+1
+    except:
+        print("Enter an integer more than 3")
 
 x = math.floor(random.randint(0,GridSizex)/2)*2
 y = math.floor(random.randint(0,GridSizey)/2)*2
