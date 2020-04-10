@@ -190,7 +190,7 @@ class Generator(object):
             
             img = img.resize(((self.sizex+2) * cellsize, (self.sizey+2) * cellsize), Image.BOX)
             img.show()
-            img.save("Prim's Algorithm/mazes/" + imgname + ".jpg")
+            img.save("mazes/" + imgname + ".jpg")
             img.close()
 
 
