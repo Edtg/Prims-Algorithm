@@ -33,7 +33,7 @@ class Generator(object):
             PrintLog(self.Frontier)
         
         PrintLog("Adding loops")
-        #self.AddLoops(math.floor(math.sqrt(sizex*sizey)-1/2))
+        self.AddLoops(math.floor(math.sqrt(sizex*sizey)-1/2))
 
         if SHOWFINALMAZE:
             os.system("cls")
@@ -103,14 +103,6 @@ class Generator(object):
         Neighbors = self.GetNeighbors(FE[0], FE[1])
         NeighborIndex = random.randint(0, len(Neighbors)-1)
 
-        #x = y = 0
-        #if (FE[0] == Neighbors[NeighborIndex][0]):
-        #    x = FE[0]
-        #    y = abs(FE[1] - Neighbors[NeighborIndex][1])
-        #elif (FE[1] == Neighbors[NeighborIndex][1]):
-        #    y = FE[1]
-        #    x = abs(FE[0] - Neighbors[NeighborIndex][0])
-        
         Mid = self.__Mid(FE, Neighbors[NeighborIndex])
         x = Mid[0]
         y = Mid[1]
@@ -132,10 +124,10 @@ class Generator(object):
             p1 = [round(random.randint(0, self.sizex-1)/2)*2, round(random.randint(0, self.sizey-1)/2)*2]
             print(p1)
             p2 = random.choice(self.GetNeighbors(p1[0], p1[1]))
-            while (self.Grid[self.__Mid(p1, p2)[0]][self.__Mid(p1, p2)[1]] == 1):
+            while (self.Grid[self.__Mid(p1, p2)[1]][self.__Mid(p1, p2)[0]] == 1):
                 p1 = [round(random.randint(0, self.sizex-1)/2)*2, round(random.randint(0, self.sizey-1)/2)*2]
                 p2 = random.choice(self.GetNeighbors(p1[0], p1[1]))
-            self.Grid[self.__Mid(p1, p2)[0]][self.__Mid(p1, p2)[1]] = 1
+            self.Grid[self.__Mid(p1, p2)[1]][self.__Mid(p1, p2)[0]] = 1
 
     def __Mid(self, p1, p2):
         x = y = 0
