@@ -25,7 +25,6 @@ class Generator(object):
         self.CalculateFrontier(startx, starty)
         while (len(self.Frontier) > 0):
             self.Expand()
-            self.CleanFrontier()
             if SHOWMAZEDEVELOPMENT:
                 os.system("cls")
                 self.PrintGrid()
@@ -67,14 +66,6 @@ class Generator(object):
                     PrintLog("Adding" + str(x) + str(y+2))
 
         PrintLog(self.Frontier)
-
-    def CleanFrontier(self):
-        ToRemove = []
-        for i in self.Frontier:
-            if (self.Grid[i[1]][i[0]] == 1):
-                ToRemove.append(i)
-        for j in ToRemove:
-            self.Frontier.remove(j)
 
     def GetNeighbors(self, x, y):
         Neighbors = []
@@ -166,7 +157,7 @@ class Generator(object):
         while cellsize == 0:
             try:
                 max = 100
-                cellsize = int(input("Enter a size for the cells between 1 and " + str(max) + ": "))
+                cellsize = int(input("Enter a size for the cells between 1 and " + str(max) + " (pixels): "))
                 if cellsize <= 0 or cellsize > max:
                     cellsize = 0
             except:
