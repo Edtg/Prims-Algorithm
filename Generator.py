@@ -190,6 +190,9 @@ class Generator(object):
             
             img = img.resize(((self.sizex+2) * cellsize, (self.sizey+2) * cellsize), Image.BOX)
             img.show()
+            if not os.path.exists("mazes"):
+                print("Creating folder 'mazes'")
+                os.mkdir("mazes")
             img.save("mazes/" + imgname + ".jpg")
             img.close()
 
