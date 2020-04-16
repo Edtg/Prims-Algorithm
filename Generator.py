@@ -1,6 +1,5 @@
 import random
 import os
-import time
 import math
 from PIL import Image
 
@@ -94,7 +93,7 @@ class Generator(object):
         Neighbors = self.GetNeighbors(FE[0], FE[1])
         NeighborIndex = random.randint(0, len(Neighbors)-1)
 
-        Mid = self.__Mid(FE, Neighbors[NeighborIndex])
+        Mid = self.Mid(FE, Neighbors[NeighborIndex])
         x = Mid[0]
         y = Mid[1]
 
@@ -112,15 +111,18 @@ class Generator(object):
 
     def AddLoops(self, NumLoops):
         for i in range(NumLoops):
+            # Get a random point and one of it's neighbors
             p1 = [round(random.randint(0, self.sizex-1)/2)*2, round(random.randint(0, self.sizey-1)/2)*2]
-            print(p1)
+            PrintLog(p1)
             p2 = random.choice(self.GetNeighbors(p1[0], p1[1]))
-            while (self.Grid[self.__Mid(p1, p2)[1]][self.__Mid(p1, p2)[0]] == 1):
+            
+            # Get new points if the current ones are already linked
+            while (self.Grid[self.Mid(p1, p2)[1]][self.Mid(p1, p2)[0]] == 1):
                 p1 = [round(random.randint(0, self.sizex-1)/2)*2, round(random.randint(0, self.sizey-1)/2)*2]
                 p2 = random.choice(self.GetNeighbors(p1[0], p1[1]))
-            self.Grid[self.__Mid(p1, p2)[1]][self.__Mid(p1, p2)[0]] = 1
+            self.Grid[self.Mid(p1, p2)[1]][self.Mid(p1, p2)[0]] = 1
 
-    def __Mid(self, p1, p2):
+    def Mid(self, p1, p2):
         x = y = 0
         # X is equal
         if (p1[0] == p2[0]):
@@ -205,7 +207,7 @@ x = math.floor(random.randint(0,GridSizex)/2)*2
 y = math.floor(random.randint(0,GridSizey)/2)*2
 PrintLog("Starting at:" + str(x) + str(y))
 if SHOWLOGS:
-    input()
+    input("Press enter to start generating the maze:")
 
 Generator(x, y, GridSizex, GridSizey)
 
