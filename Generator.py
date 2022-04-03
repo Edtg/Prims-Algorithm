@@ -1,47 +1,44 @@
 import random
 import os
-import time
 import math
+from PIL import Image
 
+SHOWLOGS = False
+SHOWMAZEDEVELOPMENT = False
+SHOWFINALMAZE = True
+
+def PrintLog(string):
+    if SHOWLOGS:
+        print(string)
 
 class Generator(object):
-    def __init__(self, startx, starty, size = 11):
-        StartTime = time.time()
-
-        self.Grid = [[0 for i in range(size)] for j in range(size)]
+    def __init__(self, startx, starty, sizex = 11, sizey = 11):
+        self.Grid = [[0 for i in range(sizex)] for j in range(sizey)]
         self.Grid[starty][startx] = 1
         self.Frontier = []
+        self.sizex = sizex
+        self.sizey = sizey
         for row in self.Grid:
-            print(row)
+            PrintLog(row)
 
         Pathways = 0
         self.CalculateFrontier(startx, starty)
         while (len(self.Frontier) > 0):
             self.Expand()
-            self.CleanFrontier()
-            #input()
-            os.system("cls")
-            #print("Generating Maze")
-            Pathways += 1
-            #self.PrintGrid()
-            #for row in self.Grid:
-            #    print(row)
-            print("Frontier:")
-            print(self.Frontier)
-            #time.sleep(0.2)
+            if SHOWMAZEDEVELOPMENT:
+                os.system("cls")
+                self.PrintGrid()
+            PrintLog("Frontier:")
+            PrintLog(self.Frontier)
         
-        print("Adding loops")
-        self.AddLoops(round(pow(round(size/5), 2)))
-        #time.sleep(0.5)
+        PrintLog("Adding loops")
+        self.AddLoops(math.floor(math.sqrt(sizex*sizey)-1/2))
 
-        EndTime = time.time()
-
-        os.system("cls")
-        self.PrintGrid()
-        print("Generated Maze in " + str(EndTime - StartTime) + " seconds")
-        print("Maze width/height: " + str(size))
-        print("Number of pathways created: " + str(Pathways))
-        print("Number of loops inserted: " + str(round(pow(round(size/5), 2))))
+        if SHOWFINALMAZE:
+            os.system("cls")
+            self.PrintGrid()
+        
+        self.SaveImage()
 
     def SetGridValue(self, x, y, Value):
         self.Grid[y][x] = Value
@@ -50,56 +47,48 @@ class Generator(object):
         return self.Grid[y][x]
 
     def CalculateFrontier(self, x, y):
-        print("Calculating frontier around:")
-        print(x, y)
-        if (x >= 0 and x <= len(self.Grid)-1 and y >= 0 and y <= len(self.Grid)-1):
-            if (x - 2 >= 0 and x - 2 <= len(self.Grid)-1 and self.Grid[y][x-2] != 1):
+        PrintLog("Calculating frontier around:")
+        PrintLog(str(x) + str(y))
+        if (x >= 0 and x <= self.sizex-1 and y >= 0 and y <= self.sizey-1):
+            if (x - 2 >= 0 and x - 2 <= self.sizex-1 and self.Grid[y][x-2] != 1):
                 if (not [x-2, y] in self.Frontier):
                     self.Frontier.append([x-2, y])
-                    print("Adding", x-2, y)
+                    PrintLog("Adding" + str(x-2) + str(y))
 
-            if (x + 2 >= 0 and x + 2 <= len(self.Grid)-1 and self.Grid[y][x+2] != 1):
+            if (x + 2 >= 0 and x + 2 <= self.sizex-1 and self.Grid[y][x+2] != 1):
                 if (not [x+2, y] in self.Frontier):
                     self.Frontier.append([x+2, y])
-                    print("Adding", x+2, y)
+                    PrintLog("Adding" + str(x+2) + str(y))
 
-            if (y - 2 >= 0 and y - 2 <= len(self.Grid)-1 and self.Grid[y-2][x] != 1):
+            if (y - 2 >= 0 and y - 2 <= self.sizey-1 and self.Grid[y-2][x] != 1):
                 if (not [x, y-2] in self.Frontier):
                     self.Frontier.append([x, y-2])
-                    print("Adding", x, y-2)
+                    PrintLog("Adding" + str(x) + str(y-2))
 
-            if (y + 2 >= 0 and y + 2 <= len(self.Grid)-1 and self.Grid[y+2][x] != 1):
+            if (y + 2 >= 0 and y + 2 <= self.sizey-1 and self.Grid[y+2][x] != 1):
                 if (not [x, y+2] in self.Frontier):
                     self.Frontier.append([x, y+2])
-                    print("Adding", x, y+2)
+                    PrintLog("Adding" + str(x) + str(y+2))
 
-        print(self.Frontier)
-
-    def CleanFrontier(self):
-        ToRemove = []
-        for i in self.Frontier:
-            if (self.Grid[i[1]][i[0]] == 1):
-                ToRemove.append(i)
-        for j in ToRemove:
-            self.Frontier.remove(j)
+        PrintLog(self.Frontier)
 
     def GetNeighbors(self, x, y):
         Neighbors = []
-        print("Neighboring:", x, y)
-        if (x >= 0 and x <= len(self.Grid)-1 and y >= 0 and y <= len(self.Grid)-1):
+        PrintLog("Neighboring:" + str(x) + str(y))
+        if (x >= 0 and x <= self.sizex-1 and y >= 0 and y <= self.sizey-1):
             if (x-2 >= 0):
                 if (self.Grid[y][x-2] == 1):
                     Neighbors.append([x-2, y])
-            if (x+2 <= len(self.Grid)-1):
+            if (x+2 <= self.sizex-1):
                 if (self.Grid[y][x+2] == 1):
                     Neighbors.append([x+2, y])
             if (y-2 >= 0):
                 if (self.Grid[y-2][x] == 1):
                     Neighbors.append([x, y-2])
-            if (y+2 <= len(self.Grid)-1):
+            if (y+2 <= self.sizey-1):
                 if (self.Grid[y+2][x] == 1):
                     Neighbors.append([x, y+2])
-            print(Neighbors)
+            PrintLog(Neighbors)
         return Neighbors
 
     def GetDirectNeighbors(self, x, y):
@@ -122,45 +111,41 @@ class Generator(object):
     def Expand(self):
         FrontierIndex = random.randint(0, len(self.Frontier)-1)
         FE = self.Frontier[FrontierIndex]
-        print("Chosen frontier:")
-        print(FE)
+        PrintLog("Chosen frontier:")
+        PrintLog(FE)
         Neighbors = self.GetNeighbors(FE[0], FE[1])
         NeighborIndex = random.randint(0, len(Neighbors)-1)
 
-        #x = y = 0
-        #if (FE[0] == Neighbors[NeighborIndex][0]):
-        #    x = FE[0]
-        #    y = abs(FE[1] - Neighbors[NeighborIndex][1])
-        #elif (FE[1] == Neighbors[NeighborIndex][1]):
-        #    y = FE[1]
-        #    x = abs(FE[0] - Neighbors[NeighborIndex][0])
-        
-        Mid = self.__Mid(FE, Neighbors[NeighborIndex])
+        Mid = self.Mid(FE, Neighbors[NeighborIndex])
         x = Mid[0]
         y = Mid[1]
 
-        print("Midpoint:")
-        print(x, y)
+        PrintLog("Midpoint:")
+        PrintLog(str(x) + str(y))
 
         self.Grid[FE[1]][FE[0]] = 1
         self.Grid[y][x] = 1
 
-        print("Removing:", self.Frontier[FrontierIndex])
+        PrintLog("Removing:" + str(self.Frontier[FrontierIndex]))
         self.Frontier.remove(FE)
-        print("Removed", FE, "from frontier")
+        PrintLog("Removed" + str(FE) + str("from frontier"))
 
         self.CalculateFrontier(FE[0], FE[1])
 
     def AddLoops(self, NumLoops):
         for i in range(NumLoops):
-            p1 = [round(random.randint(0, len(self.Grid)-1)/2)*2, round(random.randint(0, len(self.Grid)-1)/2)*2]
+            # Get a random point and one of it's neighbors
+            p1 = [round(random.randint(0, self.sizex-1)/2)*2, round(random.randint(0, self.sizey-1)/2)*2]
+            PrintLog(p1)
             p2 = random.choice(self.GetNeighbors(p1[0], p1[1]))
-            while (self.Grid[self.__Mid(p1, p2)[0]][self.__Mid(p1, p2)[1]] == 1):
-                p1 = [round(random.randint(0, len(self.Grid)-1)/2)*2, round(random.randint(0, len(self.Grid)-1)/2)*2]
+            
+            # Get new points if the current ones are already linked
+            while (self.Grid[self.Mid(p1, p2)[1]][self.Mid(p1, p2)[0]] == 1):
+                p1 = [round(random.randint(0, self.sizex-1)/2)*2, round(random.randint(0, self.sizey-1)/2)*2]
                 p2 = random.choice(self.GetNeighbors(p1[0], p1[1]))
-            self.Grid[self.__Mid(p1, p2)[0]][self.__Mid(p1, p2)[1]] = 1
+            self.Grid[self.Mid(p1, p2)[1]][self.Mid(p1, p2)[0]] = 1
 
-    def __Mid(self, p1, p2):
+    def Mid(self, p1, p2):
         x = y = 0
         # X is equal
         if (p1[0] == p2[0]):
@@ -182,13 +167,7 @@ class Generator(object):
         return [x, y]
 
     def PrintGrid(self):
-        y = 0
-        #for i in range(len(self.Grid)):
-        #    print(" " + str(i), end="")
-        #print("\n", end="")
         for row in self.Grid:
-        #    print(y, end="")
-            y += 1
             for cell in row:
                 if (cell == 0):
                     print(" ", end=" ")
@@ -202,17 +181,64 @@ class Generator(object):
                     print("\033[1;31;40m\u25A0\033[1;30;40m", end=" ")
             print("\n", end="")
 
+    def SaveImage(self):
+        imgname = input("Enter a name to save the image as: ")
+        cellsize = 0
+        while cellsize == 0:
+            try:
+                max = 100
+                cellsize = int(input("Enter a size for the cells between 1 and " + str(max) + " (pixels): "))
+                if cellsize <= 0 or cellsize > max:
+                    cellsize = 0
+            except:
+                cellsize = 0
+
+        with Image.new("RGB", (self.sizex+2, self.sizey+2), (255,255,255)) as img:
+            imgpixels = img.load()
+
+            for border in range(img.size[0]):
+                imgpixels[border,0] = (0,0,0)
+                imgpixels[border,img.size[1]-1] = (0,0,0)
+            for border in range(img.size[1]):
+                imgpixels[0,border] = (0,0,0)
+                imgpixels[img.size[0]-1,border] = (0,0,0)
+            for row in range(len(self.Grid)):
+                for cell in range(len(self.Grid[row])):
+                    if self.Grid[row][cell] == 0:
+                        imgpixels[cell+1,row+1] = (70,100,150)
+                    else:
+                        imgpixels[cell+1,row+1] = (255,255,255)
+            
+            img = img.resize(((self.sizex+2) * cellsize, (self.sizey+2) * cellsize), Image.BOX)
+            img.show()
+            if not os.path.exists("mazes"):
+                print("Creating folder 'mazes'")
+                os.mkdir("mazes")
+            img.save("mazes/" + imgname + ".jpg")
+            img.close()
+
 
         
 
 if (__name__ == "__main__"):
     GridSize = 15
 
-    x = math.floor(random.randint(0,GridSize)/2)*2
-    y = math.floor(random.randint(0,GridSize)/2)*2
-    print("Starting at:", x, y)
-    #input()
+GridSizex = 0
+GridSizey = 0
 
-    Generator(x, y, GridSize)
+while GridSizex < 3 or GridSizey < 3:
+    try:
+        GridSizex = (round(int(input("Enter the width of the maze: "))/2)*2)+1
+        GridSizey = (round(int(input("Enter the height of the maze: "))/2)*2)+1
+    except:
+        print("Enter an integer more than 3")
+
+x = math.floor(random.randint(0,GridSizex)/2)*2
+y = math.floor(random.randint(0,GridSizey)/2)*2
+PrintLog("Starting at:" + str(x) + str(y))
+if SHOWLOGS:
+    input("Press enter to start generating the maze:")
+
+Generator(x, y, GridSizex, GridSizey)
 
 
